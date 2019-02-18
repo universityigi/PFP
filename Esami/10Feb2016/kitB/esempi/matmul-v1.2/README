@@ -1,0 +1,21 @@
+matmul-v1.2
+
+This package contains different C implementations of a function for computing the 
+product of two 1300x1300 matrices of 32 bit integers. The different versions show how 
+to improve a base naive implementation to make it cache-friendly and use parallelism.
+
+To compile and run the package you need a platform with a recent version of gcc and 
+support for AVX 2 and pthreads. You may want to install perf to profile the code.
+
+Istructions:
+
+- compile the program: make
+- run performance tests: make run
+- check correctness of implementations: make check
+- profile codes with perf: make perf
+- clean the directory: make clean
+
+Enjoy!
+
+Camil Demetrescu
+Rome, December 4, 2015
