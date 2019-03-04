@@ -1,3 +1,2 @@
-# PFP - PROGRAMMAZIONE FUNZIONALE E PARALLELA 
-
-## INGEGNERIA INFORMATICA - LA SAPIENZA ROMA 2018-2019 
+# Programmazione Funzionale e Parallela
+##  Demetrescu - Sapienza 2018/2019
