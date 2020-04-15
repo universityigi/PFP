@@ -1,0 +1,4 @@
+SEG FAULT controllare star out  in copy res from dev 
+ERRORE ALLOC controlla se hai allocato la matrice di out non con print f ma con clut_panic
+DIMENSIONI H W  passale sempre int tanto non cambia nulla 
+IN CROP C INCLUDI SOLO CIO' di cui hai bisogno 

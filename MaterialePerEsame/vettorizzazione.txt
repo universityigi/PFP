@@ -1,0 +1,88 @@
+////////LEZIONE 1 VETTORIZZAZIONE\\\\\\\\\\\
+registri a 128 bit in forma xmm0 xmm1 questo è il modello sse 
+invece avx 256 bit ymm0 ymm1 e così via 
+av512 zmm0 .... 
+paddd %xmm0,%xmm1
+questa cosa somma due registri  in maniera vettoriale effettuando somme in parallelo con reg a 32 bit 
+prod max min etc 
+posso dichiarare variabili mentre faccio add  __m128i a , __m128i b questo in sse 
+avx ha aggiunto altre adda a 512 e 256 
+dichiaro sempre i registri con:
+__m128i a,b,c 
+a = _mm_loadu_si128((const __m128i*)A); //serve per caricare dalla ram alla cpu un vettore
+b = stessa cosa e necessario un cast ecco perchè passo un puntatore  
+c= _mm_add_epi32(a,b);
+_mm_storeu_si128((__m128i*)C,c) // la store prende due parametri indirizzo di memoria e il reg
+ricordaa #include <immintrin.h>
+
+aggiungi una successione di fibonacci calcolata con scala giusto per portarti fortuna 
+def fib(a:Int, b:Int)(n:Int):Long = 
+    if (n < 2) a
+    else if (n == 2) b
+    else fib(a,b)(n-1) + fib(a,b)(n-2)
+
+per fare un for per iterare devo spostarmi di n dove n è il numero di bit con cui rappresento
+il dato da iterare es int 4 bit 
+i+n-1<maxnum di iterazioni
+con loop unrolling riduco il num di iterazioni es 
+for(i=0;i+3<n;i+=4){
+	C[i]=A[i]+B[i];
+	C[i+1]=A[i+1]+B[i+1];
+	C[i]=A[i+2]+B[i+2];
+	C[i]=A[i+3]+B[i+3];
+}
+ 
+risparmio iterazioni togliendo jmp e test nel codice asm 
+ogni tanto il compilatore lo fa in automatico quindi se questo funziona allora faccio la 
+versione vettorizzata
+sum_sse(A+i,B+i,C+i);
+//sempre all'interno del for fara la somma come sopra 
+
+
+////////LEZIONE 2 VETTORIZZAZIONE\\\\\\\\\\
+si può fare una versione che ha un for e e passa ad una aux i vettori dove poi fa la somma 
+
+
+esempio 
+int sum(int*v,inth){
+	int i, s=0;
+	for(i=0;i<n;i++) s+=v[i];
+	return s ;
+}
+ogni elemento è legato al precedente quindi ho problemi per la vettorizzazione 
+versione sse 
+int sum(int*v,inth){
+	int i, s=0;
+	for(i=0;i<n;i++) s+=v[i];
+	return s ;
+}
+passo 1 : loop un rolling 
+int sum(int*v,inth){
+	int i, s=0;
+	for(i=0;i+3<n;i+=4){
+		s+=v[i];
+		s+=v[i+1];
+		s+=v[i+2];
+		s+=v[i+3];
+	}
+	for(;i<n;i++)s+=v[i] // serve finire in caso di non multipli di 4 dove 4 è il num di bit 
+	return s ;
+}
+passo 2 : vers sse //puoi usare delle macro per load __mm128 e cose simili UTILE 
+int sum(int*v,inth){
+	int i, s=0, c[4] = {0}; // array classico quindi devo loaddarlo in un vettoriale 
+	__m128i vc = __mm_loadu_si128((const __m128i*)c); // ho copiato il contenuto di c 
+	for(i=0;i+3<n;i+=4){
+		__m128i vv = __mm_loadu_si128((const __m128i*)(v+i));//ricorda quelle cazzo
+								     //di parentesi
+		vc == _mm_add_epi32(vc,vv);
+	}
+	__mm_storeu_si128((__m128i*)c,vc);//scrivo in memoria il risultato 
+	for(;i<n;i++) s+=v[i];
+	for(i=0;i<4;i++) s+=c[i];
+	return s ;
+}//se voglio cambiare la vettorizzazione basterà cambiare le macro che ho definito 
+
+
+//estratti del corso di pfp 2018 Federico Mastrogiacomo
+ 
